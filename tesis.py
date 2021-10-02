@@ -42,7 +42,6 @@ def linear_threshold(G, seeds):
     resultado = []
     resultado.extend([i for i in seeds])
     while True:
-        print("hola yo me buguee")
         oldLen = len(A)
         A, nodosActivos = dispersarLT(G, A)
         resultado.extend(nodosActivos)
