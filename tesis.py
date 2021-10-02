@@ -14,12 +14,12 @@ import csv
 
 
 def buscarVecinosPre(G, nodos):
-    vecinos = []
+    vecinos = nodos
     influenciados = []
     for i in nodos:#[0]
         if not G.nodes[i]['prevecino']:
             for j in G.predecessors(i):#[1,2]
-                if (not j in nodos):
+                if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(j, i)]['probinfluenciar'] < randomVec: #[0,1]
                         influenciados.append(j)
@@ -28,12 +28,12 @@ def buscarVecinosPre(G, nodos):
 
 
 def buscarVecinosPos(G, nodos):
-    vecinos = []
+    vecinos = nodos
     influenciados = []
     for i in nodos:
         if not G.nodes[i]['posvecino']:
             for j in G.successors(i):
-                if (not j in nodos):
+                if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(i, j)]['probinfluenciar'] < randomVec: #[0,1]
                         influenciados.append(j)
@@ -119,11 +119,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # profundidad = args.l
-    # direccion = args.d
-    # randomVec = args.r
-    # nodopara = args.a
-    LT = nx.DiGraph()
     IC = nx.DiGraph()
 
     # PREPARACIÓN ARCHIVO PARA IC MODEL
@@ -142,63 +137,60 @@ if __name__ == "__main__":
     for i in IC.nodes():
         IC.nodes[i]['prevecino'] = False
         IC.nodes[i]['posvecino'] = False
+    # h = 0
+    # for q in [0, 1, 4, 6]:
+    #     for e in [0, 1, 2]:
+    #         for r in [0.25, 0.5, 0.75, 1]:
+    #             vecinosPre = ['1']
+    #             vecinosPos = ['1']
+    #             vecinos = ['1']
+    #             direccion = e
+    #             randomVec = r
 
-    # vecinosPre = ['1']
-    # vecinosPos = ['1']
-    # vecinos = ['1']
-    # direccion = 2
-    # randomVec = 1
-    # for i in range(3):
-    #     if direccion == 0:
-    #         auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-    #         vecinosPre.extend(auxvecinos) 
-    #         vecinos.extend(auxinfluenciados)
+    #             for i in range(q):
 
-    #         auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-    #         vecinosPos.extend(auxvecinos)
-    #         vecinos.extend(auxinfluenciados)
-            
-    #     if direccion == 1: 
-    #         auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-    #         vecinosPos.extend(auxvecinos)
-    #         vecinos.extend(auxinfluenciados)
+    #                 if direccion == 0:
+    #                     auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+    #                     vecinosPre.extend(auxvecinos) 
+    #                     vecinos.extend(auxinfluenciados)
 
-    #     if direccion == 2:
-    #         auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-    #         vecinosPre.extend(auxvecinos) 
-    #         vecinos.extend(auxinfluenciados)
+    #                     auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
+    #                     vecinosPos.extend(auxvecinos)
+    #                     vecinos.extend(auxinfluenciados)
 
-    # print(vecinos)
-    # for i in IC.predecessors('1'):
-    #     print(i, "soy predecesor")
-    # for i in IC.successors('1'):
-    #     print(i, "soy sucesor")
+    #                 if direccion == 1: 
+    #                     auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
+    #                     vecinosPos.extend(auxvecinos)
+    #                     vecinos.extend(auxinfluenciados)
+    #                     h = h + 1
+
+
+    #                 if direccion == 2:
+    #                     auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+    #                     vecinosPre.extend(auxvecinos) 
+    #                     vecinos.extend(auxinfluenciados)
+
+    #             # print(len(vecinos))
+    #             for i in IC.nodes():
+    #                 IC.nodes[i]['prevecino'] = False
+    #                 IC.nodes[i]['posvecino'] = False
+    #             # for i in IC.predecessors('1'):
+    #             #     print(i, "soy predecesor")
+    #             # for i in IC.successors('1'):
+    #             #     print(i, "soy sucesor")
 
  
 
     for q in [0, 1, 4, 6]:
         for e in [0, 1, 2]:
             for r in [0.25, 0.5, 0.75, 1]:
-                profundidad = q
+                profundidad = 1
                 direccion = e
                 randomVec = r
                 doc = open('archivos/IC/football/resultados/footballIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
                 
-            # if nodopara:
-            #     vecinos = [nodopara]
-            #     IC.nodes[nodopara]['vecino'] = True
-            #     for i in range(profundidad):
-            #         vecinos.extend(buscarVecinos(IC, vecinos, direccion))
-            #     print(len(vecinos), "esta es la cantidad de vecinos")
-            #     resultadoIC = list(map(int, independent_cascade(IC, vecinos)))
-            #     print("El conjunto resultado es: ", sorted(
-            #         resultadoIC), " de tamaño: ", len(resultadoIC))
-            #     for vaciar in IC.nodes():
-            #         IC.nodes[vaciar]['vecino'] = False
-            # else:
-                # calcular tiempo aquí
                 demoraIC = time.time()
                 for nodo in IC.nodes():
                     vecinosPre = [nodo]
@@ -208,103 +200,36 @@ if __name__ == "__main__":
                     for i in range(profundidad):
                         if direccion == 0:
                             auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                            vecinosPre = []
                             vecinosPre.extend(auxvecinos) 
                             vecinos.extend(auxinfluenciados)
 
                             auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
+                            vecinosPre = []
                             vecinosPos.extend(auxvecinos)
                             vecinos.extend(auxinfluenciados)
 
                         if direccion == 1: 
-                            auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-                            vecinosPos.extend(auxvecinos)
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos)
                             vecinos.extend(auxinfluenciados)
 
                         if direccion == 2:
                             auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                            vecinosPre = []
                             vecinosPre.extend(auxvecinos) 
                             vecinos.extend(auxinfluenciados)
-
                     resultadoIC = independent_cascade(IC, vecinos)
-
                     aux = nodo, len(vecinos), len(resultadoIC)
-
+                    for i in IC.nodes():
+                        IC.nodes[i]['prevecino'] = False
+                        IC.nodes[i]['posvecino'] = False
                     escribir.writerow(aux)
                 demoraIC = time.time() - demoraIC
                 escribir.writerow([str(demoraIC)])
 
-#     # fig, ax = plt.subplots()  # Create a figure containing a single axes.
-#     # Plot some data on the axes.
-#     # ax.plot([i for i in range(len(graficar))], sorted(graficar, reverse=True))
 
 
 
-#    PREPARACIÓN ARCHIVO PARA LT MODEL
-    # f = open('archivos/LT/football/footballLT.txt', 'r')
-    # archivolt = f.readlines()
-    # f.close()
-    # pesos = []
-    # nodos = []
-    # for i in range(len(archivolt)):
-    #     archivolt[i] = archivolt[i].rstrip("\n").split(" ")
-    #     h = archivolt[i][0], archivolt[i][1], int(archivolt[i][2])
-    #     nodos.append(h)
-    # LT.add_weighted_edges_from(nodos)
-    # for i in range(len(archivolt)):
-    #     LT.edges[(archivolt[i][0], archivolt[i][1])]['probinfluenciar'] = float(archivolt[i][3])
-    # for i in LT.nodes():
-    #     peso = 0
-    #     for k in LT.predecessors(i):
-    #         peso = peso + LT.edges[(k, i)]['weight']
-    #     LT.nodes[i]['etiqueta'] = (peso/2)+1
-    #     LT.nodes[i]['vecino'] = False
-    #     # print(LT.nodes[i]['resistencia'])
-                
 
-
-
-    # ### ejecución de LTR
-    # # if nodopara:
-    # #         resultadoLT = []
-    # #         vecinos= [nodopara]
-    # #         LT.nodes[nodopara]['vecino'] = True
-    # #         for i in range(profundidad):
-    # #             vecinos.extend(buscarVecinos(LT,vecinos,direccion))
-    # #         resultadoLT.extend(linear_threshold(LT, vecinos))
-    # #         resultadoLT = list(set(resultadoLT))
-    # #         print("El conjunto resultado es: ",resultadoLT, " de tamaño: ", len(resultadoLT))
-    # #         for vaciar in LT.nodes():
-    # #             LT.nodes[vaciar]['vecino'] = False
-    # # else:
-
-    # for q in [0, 1, 4, 6]:
-    #     for e in [0, 1, 2]:
-    #         for r in [0.25, 0.5, 0.75, 1]:
-    #             profundidad = q
-    #             direccion = e
-    #             randomVec = r
-    #             doc = open('archivos/LT/football/resultados/pruebaLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
-    #             escribir = csv.writer(doc, delimiter=';')
-    #             escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
-    #             demoraLT = time.time()
-    #             for nodo in LT.nodes():
-                    
-    #                 resultadoLT = []
-    #                 vecinos= [nodo]
-    #                 LT.nodes[nodo]['vecino'] = True
-
-    #                 for i in range(profundidad):
-    #                     vecinos.extend(buscarVecinos(LT,vecinos,e))
-    #                 resultadoLT.extend(linear_threshold(LT, vecinos))
-    #                 resultadoLT = list(set(resultadoLT))
-    #                 # graficar.append(len(resultadoLT))
-    #                 for vaciar in LT.nodes():
-    #                     LT.nodes[vaciar]['vecino'] = False
-    #                 aux = nodo, len(vecinos), len(resultadoLT)
-
-    #                 escribir.writerow(aux)
-    #             demoraLT = time.time() - demoraLT
-    #             escribir.writerow([str(demoraLT)])
-
-    # fig, ax = plt.subplots()  # Create a figure containing a single axes.
-    # ax.plot([i for i in range(len(graficar))],sorted(graficar,reverse=True))  # Plot some data on the axes.
