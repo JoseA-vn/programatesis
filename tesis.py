@@ -3,12 +3,7 @@
 
 
 import networkx as nx
-from networkx.classes.function import nodes_with_selfloops
-import numpy as np
-import matplotlib.pyplot as plt
-import random
 import copy
-import argparse as ap
 import time
 import csv
 
@@ -102,8 +97,8 @@ if __name__ == "__main__":
         for k in LT.predecessors(i):
             peso = peso + LT.edges[(k, i)]['weight']
         LT.nodes[i]['etiqueta'] = (peso/2)+1
-        LT.nodes[i]['vecino'] = False
-
+        LT.nodes[i]['prevecino'] = False
+        LT.nodes[i]['posvecino'] = False
     ### ejecución de LTR
 
 
@@ -118,23 +113,48 @@ if __name__ == "__main__":
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
                 demoraLT = time.time()
                 for nodo in LT.nodes():
-                    
+                    vecinosPre = [nodo]
+                    vecinosPos = [nodo]
+                    vecinos = [nodo]
                     resultadoLT = []
-                    vecinos= [nodo]
                     LT.nodes[nodo]['vecino'] = True
 
                     for i in range(profundidad):
-                        vecinos.extend(buscarVecinos(LT,vecinos,e))
+                        if direccion == 0:
+                            auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos) 
+                            vecinos.extend(auxinfluenciados)
+
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
+                            vecinosPre = []
+                            vecinosPos.extend(auxvecinos)
+                            vecinos.extend(auxinfluenciados)
+
+                        if direccion == 1: 
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos)
+                            vecinos.extend(auxinfluenciados)
+
+                        if direccion == 2:
+                            auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos) 
+                            vecinos.extend(auxinfluenciados)
                     resultadoLT.extend(linear_threshold(LT, vecinos))
                     resultadoLT = list(set(resultadoLT))
-                    # graficar.append(len(resultadoLT))
-                    for vaciar in LT.nodes():
-                        LT.nodes[vaciar]['vecino'] = False
+
+                    for i in LT.nodes():
+                        LT.nodes[i]['prevecino'] = False
+                        LT.nodes[i]['posvecino'] = False
                     aux = nodo, len(vecinos), len(resultadoLT)
 
                     escribir.writerow(aux)
                 demoraLT = time.time() - demoraLT
                 escribir.writerow([str(demoraLT)])
+
+
 
 
 
