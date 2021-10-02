@@ -134,7 +134,7 @@ if __name__ == "__main__":
     for q in [0, 1, 4, 6]:
         for e in [0, 1, 2]:
             for r in [0.25, 0.5, 0.75, 1]:
-                profundidad = 1
+                profundidad = q
                 direccion = e
                 randomVec = r
                 doc = open('archivos/IC/football/resultados/footballIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
