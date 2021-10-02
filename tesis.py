@@ -3,12 +3,8 @@
 
 
 import networkx as nx
-from networkx.classes.function import nodes_with_selfloops
-import numpy as np
-import matplotlib.pyplot as plt
 import random
 import copy
-import argparse as ap
 import time
 import csv
 
