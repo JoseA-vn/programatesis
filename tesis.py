@@ -41,42 +41,6 @@ def buscarVecinosPos(G, nodos):
     return vecinos, influenciados
 
 
-def linear_threshold(G, seeds):
-    A = copy.deepcopy(seeds)
-    resultado = []
-    resultado.extend([i for i in seeds])
-    while True:
-        print("hola yo me buguee")
-        oldLen = len(A)
-        A, nodosActivos = dispersarLT(G, A)
-        resultado.extend(nodosActivos)
-        if len(A) == oldLen:
-            break
-    return resultado
-
-
-def dispersarLT(G, activos):
-    influenciado = set()
-    for nodo in activos:
-        vecinos = G.successors(nodo)
-        for vecino in vecinos:
-            if vecino in activos:
-                continue
-            nodosActivos = list(
-                set(G.predecessors(vecino)).intersection(set(activos)))
-            if sumaInfluencias(G, nodosActivos, vecino) >= G.nodes[vecino]['etiqueta']:
-                influenciado.add(vecino)
-    activos = (list(influenciado))
-    return activos, list(influenciado)
-
-
-def sumaInfluencias(G, predecesores, nod):
-    suma = 0
-    for pred in predecesores:
-        suma += G.edges[(pred, nod)]['weight']
-    return suma
-
-
 def independent_cascade(G, seeds):
     A = copy.deepcopy(seeds)
     resultado = []
@@ -102,23 +66,9 @@ def dispersarIC(G, nodos, resultado):
     return nodos, list(influenciado)
 
 
-def main():
-    global args
-    Parser = ap.ArgumentParser(
-        description='Medida de centralidad generalizada.')
-    Parser.add_argument("-a", default=None, type=str,
-                        help='Nodo en específico al que se le calculará la centralidad.')
-    Parser.add_argument("-l", default=0, type=int,
-                        help='Nivel de profundidad.')
-    Parser.add_argument("-d", default=0, type=int,
-                        help='Sentido de influencia.')
-    Parser.add_argument("-r", default=1, type=float,
-                        help='valor de influencia en la vecindad.')
-    args = Parser.parse_args()
-
 
 if __name__ == "__main__":
-    main()
+
     IC = nx.DiGraph()
 
     # PREPARACIÓN ARCHIVO PARA IC MODEL
