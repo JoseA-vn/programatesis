@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
 
 #    PREPARACIÓN ARCHIVO PARA LT MODEL
-    f = open('archivos/LT/football/footballLT.txt', 'r')
+    f = open('archivos/LT/bitcoin/bitcoinLT.txt', 'r')
     archivolt = f.readlines()
     f.close()
     pesos = []
@@ -107,7 +107,7 @@ if __name__ == "__main__":
                 profundidad = q
                 direccion = e
                 randomVec = r
-                doc = open('archivos/LT/football/resultados/footballLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                doc = open('archivos/LT/bitcoin/resultados/bitcoinLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
                 demoraLT = time.time()
@@ -116,7 +116,6 @@ if __name__ == "__main__":
                     vecinosPos = [nodo]
                     vecinos = [nodo]
                     resultadoLT = []
-                    LT.nodes[nodo]['vecino'] = True
 
                     for i in range(profundidad):
                         if direccion == 0:
@@ -141,8 +140,10 @@ if __name__ == "__main__":
                             vecinosPre = []
                             vecinosPre.extend(auxvecinos) 
                             vecinos.extend(auxinfluenciados)
+                    # print(vecinos,"estos son los vecinos")
                     vecinos = list(dict.fromkeys(vecinos))
                     resultadoLT.extend(linear_threshold(LT, vecinos))
+                    # print(len(resultadoLT), "igual hago los resultados")
                     resultadoLT = list(set(resultadoLT))
 
                     for i in LT.nodes():
@@ -151,8 +152,13 @@ if __name__ == "__main__":
                     aux = nodo, len(vecinos), len(resultadoLT)
 
                     escribir.writerow(aux)
+                    print(nodo)
                 demoraLT = time.time() - demoraLT
                 escribir.writerow([str(demoraLT)])
+                print("aquí parece que no llego")
+                break
+            break
+        break
 
 
 
