@@ -79,7 +79,7 @@ if __name__ == "__main__":
 
 
 #    PREPARACIÓN ARCHIVO PARA LT MODEL
-    f = open('archivos/LT/football/footballLT.txt', 'r')
+    f = open('archivos/LT/bitcoin/bitcoinLT.txt', 'r')
     archivolt = f.readlines()
     f.close()
     pesos = []
@@ -107,7 +107,7 @@ if __name__ == "__main__":
                 profundidad = q
                 direccion = e
                 randomVec = r
-                doc = open('archivos/LT/football/resultados/footballLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                doc = open('archivos/LT/bitcoin/resultados/bitcoinLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
                 demoraLT = time.time()
