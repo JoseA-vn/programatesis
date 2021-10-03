@@ -45,6 +45,7 @@ def linear_threshold(G, seeds):
         oldLen = len(A)
         A, nodosActivos = dispersarLT(G, A)
         resultado.extend(nodosActivos)
+        resultado = list(dict.fromkeys(resultado))
         if len(A) == oldLen:
             break
     return resultado
@@ -61,7 +62,7 @@ def dispersarLT(G, activos):
                 set(G.predecessors(vecino)).intersection(set(activos)))
             if sumaInfluencias(G, nodosActivos, vecino) >= G.nodes[vecino]['etiqueta']:
                 influenciado.add(vecino)
-    activos = (list(influenciado))
+    activos.extend(list(influenciado))
     return activos, list(influenciado)
 
 
@@ -140,25 +141,18 @@ if __name__ == "__main__":
                             vecinosPre = []
                             vecinosPre.extend(auxvecinos) 
                             vecinos.extend(auxinfluenciados)
-                    # print(vecinos,"estos son los vecinos")
                     vecinos = list(dict.fromkeys(vecinos))
                     resultadoLT.extend(linear_threshold(LT, vecinos))
-                    # print(len(resultadoLT), "igual hago los resultados")
                     resultadoLT = list(set(resultadoLT))
-
+                    print(nodo)
                     for i in LT.nodes():
                         LT.nodes[i]['prevecino'] = False
                         LT.nodes[i]['posvecino'] = False
                     aux = nodo, len(vecinos), len(resultadoLT)
 
                     escribir.writerow(aux)
-                    print(nodo)
                 demoraLT = time.time() - demoraLT
                 escribir.writerow([str(demoraLT)])
-                print("aquí parece que no llego")
-                break
-            break
-        break
 
 
 
