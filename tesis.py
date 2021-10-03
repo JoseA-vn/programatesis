@@ -144,7 +144,6 @@ if __name__ == "__main__":
                     vecinos = list(dict.fromkeys(vecinos))
                     resultadoLT.extend(linear_threshold(LT, vecinos))
                     resultadoLT = list(set(resultadoLT))
-                    print(nodo)
                     for i in LT.nodes():
                         LT.nodes[i]['prevecino'] = False
                         LT.nodes[i]['posvecino'] = False
