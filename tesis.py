@@ -151,7 +151,7 @@ if __name__ == "__main__":
                             vecinos.extend(auxinfluenciados)
 
                             auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-                            vecinosPre = []
+                            vecinosPos = []
                             vecinosPos.extend(auxvecinos)
                             vecinos.extend(auxinfluenciados)
 
@@ -166,6 +166,7 @@ if __name__ == "__main__":
                             vecinosPre = []
                             vecinosPre.extend(auxvecinos) 
                             vecinos.extend(auxinfluenciados)
+                    vecinos = list(dict.fromkeys(vecinos))
                     resultadoIC = independent_cascade(IC, vecinos)
                     aux = nodo, len(vecinos), len(resultadoIC)
                     for i in IC.nodes():
@@ -174,7 +175,6 @@ if __name__ == "__main__":
                     escribir.writerow(aux)
                 demoraIC = time.time() - demoraIC
                 escribir.writerow([str(demoraIC)])
-
 
 
 
