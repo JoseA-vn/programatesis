@@ -68,7 +68,7 @@ if __name__ == "__main__":
     IC = nx.DiGraph()
 
     # PREPARACIÓN ARCHIVO PARA IC MODEL
-    f = open('archivos/IC/football/footballIC.txt', 'r')
+    f = open('archivos/IC/bitcoin/bitcoinIC.txt', 'r')
     mensaje = f.readlines()
     f.close()
     nodosIC = []
@@ -133,7 +133,7 @@ if __name__ == "__main__":
                 profundidad = q
                 direccion = e
                 randomVec = r
-                doc = open('archivos/IC/football/resultados/footballIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                doc = open('archivos/IC/bitcoin/resultados/bitcoinIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
                 
