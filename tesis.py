@@ -42,7 +42,9 @@ def independent_cascade(G, seeds):
     resultado = []
     for i in seeds:
         resultado.append(i)
-    while True:
+    # while True:
+    for i in range(1):
+        print(A)
         oldLen = len(A)
         A, nodosActivos = dispersarIC(G, A, resultado)
         resultado.extend(nodosActivos)
@@ -54,11 +56,13 @@ def independent_cascade(G, seeds):
 def dispersarIC(G, nodos, resultado):
     influenciado = set()
     for nodo in nodos:
+        print(nodo)
         for vecino in G.successors(nodo):
             if not vecino in resultado:
                 if round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:
                     influenciado.add(vecino)
     nodos = (list(influenciado))
+    print(sorted(nodos))
     return nodos, list(influenciado)
 
 
@@ -168,13 +172,19 @@ if __name__ == "__main__":
                             vecinos.extend(auxinfluenciados)
                     vecinos = list(dict.fromkeys(vecinos))
                     resultadoIC = independent_cascade(IC, vecinos)
+                    print(nodo, len(vecinos), len(resultadoIC))
                     aux = nodo, len(vecinos), len(resultadoIC)
                     for i in IC.nodes():
                         IC.nodes[i]['prevecino'] = False
                         IC.nodes[i]['posvecino'] = False
                     escribir.writerow(aux)
+                    break
                 demoraIC = time.time() - demoraIC
                 escribir.writerow([str(demoraIC)])
+                break
+            break
+        break
+
 
 
 
