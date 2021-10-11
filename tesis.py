@@ -67,7 +67,7 @@ if __name__ == "__main__":
     IC = nx.DiGraph()
 
     # PREPARACIÓN ARCHIVO PARA IC MODEL
-    f = open('archivos/IC/bitcoin/bitcoinIC.txt', 'r')
+    f = open('archivos/IC/football/footballIC.txt', 'r')
     mensaje = f.readlines()
     f.close()
     nodosIC = []
@@ -82,59 +82,17 @@ if __name__ == "__main__":
     for i in IC.nodes():
         IC.nodes[i]['prevecino'] = False
         IC.nodes[i]['posvecino'] = False
-    # h = 0
-    # for q in [0, 1, 4, 6]:
-    #     for e in [0, 1, 2]:
-    #         for r in [0.25, 0.5, 0.75, 1]:
-    #             vecinosPre = ['1']
-    #             vecinosPos = ['1']
-    #             vecinos = ['1']
-    #             direccion = e
-    #             randomVec = r
-
-    #             for i in range(q):
-
-    #                 if direccion == 0:
-    #                     auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-    #                     vecinosPre.extend(auxvecinos) 
-    #                     vecinos.extend(auxinfluenciados)
-
-    #                     auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-    #                     vecinosPos.extend(auxvecinos)
-    #                     vecinos.extend(auxinfluenciados)
-
-    #                 if direccion == 1: 
-    #                     auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-    #                     vecinosPos.extend(auxvecinos)
-    #                     vecinos.extend(auxinfluenciados)
-    #                     h = h + 1
-
-
-    #                 if direccion == 2:
-    #                     auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-    #                     vecinosPre.extend(auxvecinos) 
-    #                     vecinos.extend(auxinfluenciados)
-
-    #             # print(len(vecinos))
-    #             for i in IC.nodes():
-    #                 IC.nodes[i]['prevecino'] = False
-    #                 IC.nodes[i]['posvecino'] = False
-    #             # for i in IC.predecessors('1'):
-    #             #     print(i, "soy predecesor")
-    #             # for i in IC.successors('1'):
-    #             #     print(i, "soy sucesor")
-
  
 
     for q in [0, 1, 4, 6]:
         for e in [0, 1, 2]:
-            for r in [0.25, 0.5, 0.75, 1]:
-                profundidad = 1
-                direccion = 1
-                randomVec = r
-                doc = open('archivos/IC/bitcoin/resultados/bitcoinIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+            if q == 0: 
+                profundidad = q
+                direccion = e
+
+                doc = open('archivos/IC/football/resultados/footballIC'+str(q)+str(e)+'0'+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
-                escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
+                escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+'0'])
                 
                 demoraIC = time.time()
                 for nodo in IC.nodes():
@@ -167,18 +125,61 @@ if __name__ == "__main__":
                             vecinos.extend(auxinfluenciados)
                     vecinos = list(dict.fromkeys(vecinos))
                     resultadoIC = independent_cascade(IC, vecinos)
-                    print(nodo, len(vecinos), len(resultadoIC))
                     aux = nodo, len(vecinos), len(resultadoIC)
                     for i in IC.nodes():
                         IC.nodes[i]['prevecino'] = False
                         IC.nodes[i]['posvecino'] = False
                     escribir.writerow(aux)
-                    break
                 demoraIC = time.time() - demoraIC
                 escribir.writerow([str(demoraIC)])
-                break
-            break
-        break
+            else:
+                
+                for r in [0.25, 0.5, 0.75, 1]:
+                    profundidad = q
+                    direccion = e
+                    randomVec = r
+                    doc = open('archivos/IC/football/resultados/footballIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                    escribir = csv.writer(doc, delimiter=';')
+                    escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
+                    
+                    demoraIC = time.time()
+                    for nodo in IC.nodes():
+                        vecinosPre = [nodo]
+                        vecinosPos = [nodo]
+                        vecinos = [nodo]
+
+                        for i in range(profundidad):
+                            if direccion == 0:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
+
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
+                                vecinosPos = []
+                                vecinosPos.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
+
+                            if direccion == 1: 
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
+
+                            if direccion == 2:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
+                        vecinos = list(dict.fromkeys(vecinos))
+                        resultadoIC = independent_cascade(IC, vecinos)
+                        aux = nodo, len(vecinos), len(resultadoIC)
+                        for i in IC.nodes():
+                            IC.nodes[i]['prevecino'] = False
+                            IC.nodes[i]['posvecino'] = False
+                        escribir.writerow(aux)
+                    demoraIC = time.time() - demoraIC
+                    escribir.writerow([str(demoraIC)])
 
 
 
