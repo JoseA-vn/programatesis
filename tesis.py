@@ -10,7 +10,7 @@ import csv
 
 
 def buscarVecinosPre(G, nodos):
-    vecinos = nodos
+    vecinos = copy.deepcopy(nodos)
     influenciados = []
     for i in nodos:
         if not G.nodes[i]['prevecino']:
@@ -24,21 +24,16 @@ def buscarVecinosPre(G, nodos):
 
 
 def buscarVecinosPos(G, nodos):
-    vecinos = nodos
+    vecinos = copy.deepcopy(nodos)
     influenciados = []
-    print("hola yo solo vine por", nodos)
-    h = 0
     for i in nodos:
-        # print(i,"este nodo qué wea")
         if not G.nodes[i]['posvecino']:
             for j in G.successors(i):
-                h = h+1
                 if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(i, j)]['probinfluenciar'] < randomVec: #[0,1]
                         influenciados.append(j)
             G.nodes[i]['posvecino'] = True
-    print(len(influenciados), "y esta es su cantidad de vecinos influenciados", h)
     return vecinos, influenciados
 
 
@@ -136,7 +131,7 @@ if __name__ == "__main__":
             for r in [0.25, 0.5, 0.75, 1]:
                 profundidad = 1
                 direccion = 1
-                randomVec = 1
+                randomVec = r
                 doc = open('archivos/IC/bitcoin/resultados/bitcoinIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
