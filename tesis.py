@@ -12,9 +12,9 @@ import csv
 def buscarVecinosPre(G, nodos):
     vecinos = nodos
     influenciados = []
-    for i in nodos:#[0]
+    for i in nodos:
         if not G.nodes[i]['prevecino']:
-            for j in G.predecessors(i):#[1,2]
+            for j in G.predecessors(i):
                 if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(j, i)]['probinfluenciar'] < randomVec: #[0,1]
@@ -26,25 +26,27 @@ def buscarVecinosPre(G, nodos):
 def buscarVecinosPos(G, nodos):
     vecinos = nodos
     influenciados = []
+    print("hola yo solo vine por", nodos)
+    h = 0
     for i in nodos:
+        # print(i,"este nodo qué wea")
         if not G.nodes[i]['posvecino']:
             for j in G.successors(i):
+                h = h+1
                 if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(i, j)]['probinfluenciar'] < randomVec: #[0,1]
                         influenciados.append(j)
             G.nodes[i]['posvecino'] = True
+    print(len(influenciados), "y esta es su cantidad de vecinos influenciados", h)
     return vecinos, influenciados
 
 
 def independent_cascade(G, seeds):
     A = copy.deepcopy(seeds)
     resultado = []
-    for i in seeds:
-        resultado.append(i)
-    # while True:
-    for i in range(1):
-        print(A)
+    resultado.extend([i for i in seeds])
+    while True:
         oldLen = len(A)
         A, nodosActivos = dispersarIC(G, A, resultado)
         resultado.extend(nodosActivos)
@@ -56,13 +58,11 @@ def independent_cascade(G, seeds):
 def dispersarIC(G, nodos, resultado):
     influenciado = set()
     for nodo in nodos:
-        print(nodo)
         for vecino in G.successors(nodo):
             if not vecino in resultado:
-                if round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:
+                if  round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:
                     influenciado.add(vecino)
     nodos = (list(influenciado))
-    print(sorted(nodos))
     return nodos, list(influenciado)
 
 
@@ -134,9 +134,9 @@ if __name__ == "__main__":
     for q in [0, 1, 4, 6]:
         for e in [0, 1, 2]:
             for r in [0.25, 0.5, 0.75, 1]:
-                profundidad = q
-                direccion = e
-                randomVec = r
+                profundidad = 1
+                direccion = 1
+                randomVec = 1
                 doc = open('archivos/IC/bitcoin/resultados/bitcoinIC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
