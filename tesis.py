@@ -9,7 +9,7 @@ import csv
 
 
 def buscarVecinosPre(G, nodos):
-    vecinos = nodos
+    vecinos = copy.deepcopy(nodos)
     influenciados = []
     for i in nodos:#[0]
         if not G.nodes[i]['prevecino']:
@@ -23,7 +23,7 @@ def buscarVecinosPre(G, nodos):
 
 
 def buscarVecinosPos(G, nodos):
-    vecinos = nodos
+    vecinos = copy.deepcopy(nodos)
     influenciados = []
     for i in nodos:
         if not G.nodes[i]['posvecino']:
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
 
 #    PREPARACIÓN ARCHIVO PARA LT MODEL
-    f = open('archivos/LT/bitcoin/bitcoinLT.txt', 'r')
+    f = open('archivos/LT/football/footballLT.txt', 'r')
     archivolt = f.readlines()
     f.close()
     pesos = []
@@ -104,13 +104,12 @@ if __name__ == "__main__":
 
     for q in [0, 1, 4, 6]:
         for e in [0, 1, 2]:
-            for r in [0.25, 0.5, 0.75, 1]:
+            if q == 0:
                 profundidad = q
                 direccion = e
-                randomVec = r
-                doc = open('archivos/LT/bitcoin/resultados/bitcoinLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                doc = open('archivos/LT/football/resultados/footballLT'+str(q)+str(e)+'0'+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
-                escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
+                escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+'0'])
                 demoraLT = time.time()
                 for nodo in LT.nodes():
                     vecinosPre = [nodo]
@@ -152,6 +151,55 @@ if __name__ == "__main__":
                     escribir.writerow(aux)
                 demoraLT = time.time() - demoraLT
                 escribir.writerow([str(demoraLT)])
+            else:
+                for r in [0.25, 0.5, 0.75, 1]:
+                    profundidad = q
+                    direccion = e
+                    randomVec = r
+                    doc = open('archivos/LT/football/resultados/footballLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                    escribir = csv.writer(doc, delimiter=';')
+                    escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
+                    demoraLT = time.time()
+                    for nodo in LT.nodes():
+                        vecinosPre = [nodo]
+                        vecinosPos = [nodo]
+                        vecinos = [nodo]
+                        resultadoLT = []
+
+                        for i in range(profundidad):
+                            if direccion == 0:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
+
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
+                                vecinosPre = []
+                                vecinosPos.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
+
+                            if direccion == 1: 
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
+
+                            if direccion == 2:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
+                        vecinos = list(dict.fromkeys(vecinos))
+                        resultadoLT.extend(linear_threshold(LT, vecinos))
+                        resultadoLT = list(set(resultadoLT))
+                        for i in LT.nodes():
+                            LT.nodes[i]['prevecino'] = False
+                            LT.nodes[i]['posvecino'] = False
+                        aux = nodo, len(vecinos), len(resultadoLT)
+
+                        escribir.writerow(aux)
+                    demoraLT = time.time() - demoraLT
+                    escribir.writerow([str(demoraLT)])
 
 
 

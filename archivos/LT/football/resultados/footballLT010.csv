@@ -1,4 +1,4 @@
-i;|Xi|;|F(Xi)|;profundidad0;dirección2;prob vecinos0.75
+i;|Xi|;|F(Xi)|;profundidad0;dirección1;prob vecinos0
 7;1;1
 1;1;1
 9;1;2
@@ -34,4 +34,4 @@ i;|Xi|;|F(Xi)|;profundidad0;dirección2;prob vecinos0.75
 23;1;1
 27;1;1
 32;1;1
-0.0019693374633789062
+0.002001047134399414
