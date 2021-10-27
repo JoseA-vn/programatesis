@@ -4,16 +4,17 @@ import statistics
 import numpy as np
 
 
-archivos = os.listdir('C:/Users/jvera/Desktop/programatesis/archivos/IC/higgs/resultados')
+archivos = os.listdir('C:/Users/jvera/Desktop/programatesis/archivos/IC/bitcoin/resultados')
 
-higgs = open('C:/Users/jvera/Desktop/programatesis/archivos/IC/higgs/higgsEst.csv','w',newline='')
-escribir = csv.writer(higgs, delimiter=';')
+bitcoin = open('C:/Users/jvera/Desktop/programatesis/archivos/IC/bitcoin/bitcoinEst.csv','w',newline='')
+escribir = csv.writer(bitcoin, delimiter=';')
 escribir.writerow(['profundidad', 'direccion', 'probvecinos','min xi', 'max xi','min fx', 'max fx', 'promedio xi', 'promedio fx','mediana xi','mediana fx','desviacion estandar xi','desviacion estandar fx','cantidad de valores distintos xi','cantidad de valores distintos fx','tiempo ejecucion'])
 for i in archivos:
-    documento = open('C:/Users/jvera/Desktop/programatesis/archivos/IC/higgs/resultados/'+i, 'r')
+    documento = open('C:/Users/jvera/Desktop/programatesis/archivos/IC/bitcoin/resultados/'+i, 'r')
     lineas = documento.readlines()
     primeralinea = lineas.pop(0).rstrip("\n").split(";")
     ultimalinea = lineas.pop().rstrip("\n").split(";")
+    ultimalinea[0] = ultimalinea[0].replace('.',',')
     xi = []
     fx = []
     for i in lineas:
