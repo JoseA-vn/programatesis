@@ -14,12 +14,12 @@ import csv
 
 
 def buscarVecinosPre(G, nodos):
-    vecinos = []
+    vecinos = copy.deepcopy(nodos)
     influenciados = []
     for i in nodos:#[0]
         if not G.nodes[i]['prevecino']:
             for j in G.predecessors(i):#[1,2]
-                if (not j in nodos):
+                if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(j, i)]['probinfluenciar'] < randomVec: #[0,1]
                         influenciados.append(j)
@@ -28,12 +28,12 @@ def buscarVecinosPre(G, nodos):
 
 
 def buscarVecinosPos(G, nodos):
-    vecinos = []
+    vecinos = copy.deepcopy(nodos)
     influenciados = []
     for i in nodos:
         if not G.nodes[i]['posvecino']:
             for j in G.successors(i):
-                if (not j in nodos):
+                if (not j in vecinos):
                     vecinos.append(j)
                     if G.edges[(i, j)]['probinfluenciar'] < randomVec: #[0,1]
                         influenciados.append(j)
@@ -41,15 +41,16 @@ def buscarVecinosPos(G, nodos):
     return vecinos, influenciados
 
 
+
 def linear_threshold(G, seeds):
     A = copy.deepcopy(seeds)
     resultado = []
     resultado.extend([i for i in seeds])
     while True:
-        print("hola yo me buguee")
         oldLen = len(A)
         A, nodosActivos = dispersarLT(G, A)
         resultado.extend(nodosActivos)
+        resultado = list(dict.fromkeys(resultado))
         if len(A) == oldLen:
             break
     return resultado
@@ -66,7 +67,7 @@ def dispersarLT(G, activos):
                 set(G.predecessors(vecino)).intersection(set(activos)))
             if sumaInfluencias(G, nodosActivos, vecino) >= G.nodes[vecino]['etiqueta']:
                 influenciado.add(vecino)
-    activos = (list(influenciado))
+    activos.extend(list(influenciado))
     return activos, list(influenciado)
 
 
@@ -80,8 +81,7 @@ def sumaInfluencias(G, predecesores, nod):
 def independent_cascade(G, seeds):
     A = copy.deepcopy(seeds)
     resultado = []
-    for i in seeds:
-        resultado.append(i)
+    resultado.extend([i for i in seeds])
     while True:
         oldLen = len(A)
         A, nodosActivos = dispersarIC(G, A, resultado)
@@ -96,10 +96,11 @@ def dispersarIC(G, nodos, resultado):
     for nodo in nodos:
         for vecino in G.successors(nodo):
             if not vecino in resultado:
-                if round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:
+                if  round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:
                     influenciado.add(vecino)
     nodos = (list(influenciado))
     return nodos, list(influenciado)
+
 
 
 def main():
