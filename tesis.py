@@ -84,7 +84,7 @@ if __name__ == "__main__":
         IC.nodes[i]['posvecino'] = False
  
 
-    for q in [0, 1, 4, 6]:
+    for q in [2, 3, 5,7]:
         for e in [0, 1, 2]:
             if q == 0: 
                 profundidad = q
