@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
 
 #    PREPARACIÓN ARCHIVO PARA LT MODEL
-    f = open('archivos/LT/football/footballLT.txt', 'r')
+    f = open('archivos/LT/bitcoin/bitcoinLT.txt', 'r')
     archivolt = f.readlines()
     f.close()
     pesos = []
@@ -102,12 +102,12 @@ if __name__ == "__main__":
     ### ejecución de LTR
 
 
-    for q in [0, 1, 4, 6]:
+    for q in [6]:
         for e in [0, 1, 2]:
             if q == 0:
                 profundidad = q
                 direccion = e
-                doc = open('archivos/LT/football/resultados/footballLT'+str(q)+str(e)+'0'+'.csv', 'w', newline='')
+                doc = open('archivos/LT/bitcoin/resultados/bitcoinLT'+str(q)+str(e)+'0'+'.csv', 'w', newline='')
                 escribir = csv.writer(doc, delimiter=';')
                 escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+'0'])
                 demoraLT = time.time()
@@ -152,11 +152,11 @@ if __name__ == "__main__":
                 demoraLT = time.time() - demoraLT
                 escribir.writerow([str(demoraLT)])
             else:
-                for r in [0.25, 0.5, 0.75, 1]:
+                for r in [0.5, 0.75, 1]:
                     profundidad = q
                     direccion = e
                     randomVec = r
-                    doc = open('archivos/LT/football/resultados/footballLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                    doc = open('archivos/LT/bitcoin/resultados/bitcoinLT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
                     escribir = csv.writer(doc, delimiter=';')
                     escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
                     demoraLT = time.time()
