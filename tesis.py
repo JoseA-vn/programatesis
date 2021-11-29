@@ -12,21 +12,21 @@ import time
 import csv
 
 
-def buscarVecinosPre(G, nodos):
+def buscarVecinosPre(G, nodos): # busca los nodos vecinos de entrada
     vecinos = copy.deepcopy(nodos)
     influenciados = []
-    for i in nodos:  # [0]
+    for i in nodos:
         if not G.nodes[i]['prevecino']:
-            for j in G.predecessors(i):  # [1,2]
+            for j in G.predecessors(i):
                 if (not j in vecinos):
                     vecinos.append(j)
-                    if G.edges[(j, i)]['probinfluenciar'] < randomVec:  # [0,1]
+                    if G.edges[(j, i)]['probinfluenciar'] < randomVec:
                         influenciados.append(j)
             G.nodes[i]['prevecino'] = True
-    return vecinos, influenciados
+    return vecinos, influenciados #retorna los vecinos totales del nodo para esta dirección de sentido y los de cada iteración (profundidad) 
 
 
-def buscarVecinosPos(G, nodos):
+def buscarVecinosPos(G, nodos): #busca los nodos vecinos de salida
     vecinos = copy.deepcopy(nodos)
     influenciados = []
     for i in nodos:
@@ -34,13 +34,13 @@ def buscarVecinosPos(G, nodos):
             for j in G.successors(i):
                 if (not j in vecinos):
                     vecinos.append(j)
-                    if G.edges[(i, j)]['probinfluenciar'] < randomVec:  # [0,1]
+                    if G.edges[(i, j)]['probinfluenciar'] < randomVec:
                         influenciados.append(j)
             G.nodes[i]['posvecino'] = True
-    return vecinos, influenciados
+    return vecinos, influenciados #retorna los vecinos totales del nodo para esta dirección de sentido y los de cada iteración (profundidad)
 
 
-def linear_threshold(G, seeds):
+def linear_threshold(G, seeds): # comienza el proceso de LT-Model
     A = copy.deepcopy(seeds)
     resultado = []
     resultado.extend([i for i in seeds])
@@ -51,10 +51,10 @@ def linear_threshold(G, seeds):
         resultado = list(dict.fromkeys(resultado))
         if len(A) == oldLen:
             break
-    return resultado
+    return resultado #retorna el resultado final de la dispersion de influencia
 
 
-def dispersarLT(G, activos):
+def dispersarLT(G, activos): #trabaja con el algoritmo de dispersión de LT 
     influenciado = set()
     for nodo in activos:
         vecinos = G.successors(nodo)
@@ -63,20 +63,20 @@ def dispersarLT(G, activos):
                 continue
             nodosActivos = list(
                 set(G.predecessors(vecino)).intersection(set(activos)))
-            if sumaInfluencias(G, nodosActivos, vecino) >= G.nodes[vecino]['etiqueta']:
+            if sumaInfluencias(G, nodosActivos, vecino) >= G.nodes[vecino]['etiqueta']: #envía los nodos vecinos activos a suma inlfuencias y luego compara el resultado de sus fuerzas de dispersión para influenciar al nodo actual
                 influenciado.add(vecino)
     activos.extend(list(influenciado))
-    return activos, list(influenciado)
+    return activos, list(influenciado) #retorna el resultado acumulado y el resultado de esta iteración.
 
 
-def sumaInfluencias(G, predecesores, nod):
+def sumaInfluencias(G, predecesores, nod): #recibe los nodos activos y suma las fuerzas de influencia
     suma = 0
     for pred in predecesores:
         suma += G.edges[(pred, nod)]['weight']
-    return suma
+    return suma #retorna el resultado de la suma
 
 
-def independent_cascade(G, seeds):
+def independent_cascade(G, seeds): #comienza el proceso de IC-Model
     A = copy.deepcopy(seeds)
     resultado = []
     resultado.extend([i for i in seeds])
@@ -86,21 +86,21 @@ def independent_cascade(G, seeds):
         resultado.extend(nodosActivos)
         if len(A) == oldLen:
             break
-    return resultado
+    return resultado #retorna el resultado final de la dispersión de influencia
 
 
-def dispersarIC(G, nodos, resultado):
+def dispersarIC(G, nodos, resultado):#comienza el algoritmo de IC-Model
     influenciado = set()
     for nodo in nodos:
         for vecino in G.successors(nodo):
             if not vecino in resultado:
-                if round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:
+                if round(random.random(), 1) >= G.edges[(nodo, vecino)]['weight']:#influencia randómica
                     influenciado.add(vecino)
     nodos = (list(influenciado))
-    return nodos, list(influenciado)
+    return nodos, list(influenciado) #retorna el resultado acumulado y el de la iteración actual
 
 
-def main():
+def main(): #declaración de los parámetros ingresados por el ususario
     global args
     Parser = ap.ArgumentParser(
         description='Medida de centralidad generalizada.')
@@ -119,11 +119,14 @@ def main():
 
 if __name__ == "__main__":
     main()
-    profundidad = args.l
+
+    #seteo de parámetros en las variables del programa
+    profundidad = args.l 
     direccion = args.d
     randomVec = args.r
     nodopara = args.a
     modelo = args.m
+
     LT = nx.DiGraph()
     IC = nx.DiGraph()
     if modelo == 1:
@@ -146,6 +149,9 @@ if __name__ == "__main__":
 
         if nodopara:
             vecinos = [nodopara]
+            vecinosPos = [nodopara]
+            vecinosPre = [nodopara]
+            resultadoIC = []
             for i in range(profundidad):
                 if direccion == 0:
                     auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
@@ -249,6 +255,8 @@ if __name__ == "__main__":
         ### ejecución de LTR
         if nodopara:
             vecinos = [nodopara]
+            vecinosPos = [nodopara]
+            vecinosPre = [nodopara]
             resultadoLT = []
 
             for i in range(profundidad):
@@ -259,7 +267,7 @@ if __name__ == "__main__":
                     vecinos.extend(auxinfluenciados)
 
                     auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
-                    vecinosPre = []
+                    vecinosPos = []
                     vecinosPos.extend(auxvecinos)
                     vecinos.extend(auxinfluenciados)
 
@@ -274,6 +282,7 @@ if __name__ == "__main__":
                     vecinosPre = []
                     vecinosPre.extend(auxvecinos) 
                     vecinos.extend(auxinfluenciados)
+            print(len(vecinos), "esta es la cantidad de vecinos")
             vecinos = list(dict.fromkeys(vecinos))
             resultadoLT.extend(linear_threshold(LT, vecinos))
             resultadoLT = list(set(resultadoLT))
