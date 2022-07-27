@@ -4,13 +4,13 @@ import statistics
 import numpy as np
 
 
-archivos = os.listdir('C:/Users/jvera/Desktop/Nuevacarpeta/programatesis/archivos/LT/football/resultados')
+archivos = os.listdir('archivos/LT/football/Resultados')
 
-football = open('C:/Users/jvera/Desktop/Nuevacarpeta/programatesis/archivos/LT/football/footballEst.csv','w',newline='')
+football = open('archivos/LT/football/footballEst.csv','w',newline='')
 escribir = csv.writer(football, delimiter=';')
 escribir.writerow(['profundidad', 'direccion', 'probvecinos','min xi', 'max xi','min fx', 'max fx', 'promedio xi', 'promedio fx','mediana xi','mediana fx','desviacion estandar xi','desviacion estandar fx','cantidad de valores distintos xi','cantidad de valores distintos fx','tiempo ejecucion'])
 for i in archivos:
-    documento = open('C:/Users/jvera/Desktop/Nuevacarpeta/programatesis/archivos/LT/football/resultados/'+i, 'r')
+    documento = open('archivos/LT/football/resultados/'+i, 'r')
     lineas = documento.readlines()
     primeralinea = lineas.pop(0).rstrip("\n").split(";")
     ultimalinea = lineas.pop().rstrip("\n").split(";")

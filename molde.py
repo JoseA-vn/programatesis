@@ -1,32 +1,26 @@
 import time 
 import random
+import os
 
-# f = open('higgs-reply_network.edgelist', 'r')
-# mensaje = f.readlines()
-# f.close()
-# h = open('archivos/IC/higgs/semillaHiggsIC.txt', 'w')
-# j = open('archivos/IC/higgs/higgsIC.txt', 'w')
-# seed = int(time.time())
-# h.write(str(seed))
-# for i in range(len(mensaje)):
-#     seed = seed + 1
-#     objetoRandom = random.Random(seed)
-#     objetoRandomVec= random.Random(objetoRandom)
-#     mensaje[i] = mensaje[i].rstrip("\n").split(" ")
-#     aux = mensaje[i][0], mensaje[i][1], round(objetoRandom.random(), 1), round(objetoRandomVec.random(), 1)
-#     j.write(str(aux[1]) +' '+ str(aux[0])+' ' + str(aux[2]) + ' '+ str(aux[3])+ '\n')
-#     print(aux[0],aux[1],aux[2],aux[3],seed)
-
-f = open('soc-sign-bitcoinalpha.csv', 'r')
+archivo = 'football'
+f = open(archivo +'.txt', 'r') #red que se quiere moldear para trabajar
 mensaje = f.readlines()
 f.close()
-j = open('archivos/LT/bitcoin/bitcoinLT.txt', 'w')
-seed = int(time.time())
-print(seed)
+os.makedirs("archivos/LT/"+archivo+ "/Resultados", exist_ok=True) #se crean los directorios
+os.makedirs("archivos/IC/"+archivo+ "/Resultados", exist_ok=True)
+h = open('archivos/IC/'+archivo+'/'+archivo+'_Seed.txt', 'w') #creacion archivo con semilla para IC
+j = open('archivos/IC/'+archivo+ '/'+archivo+ '.txt', 'w') #archivo 
+lt = open('archivos/LT/'+archivo+ '/'+archivo+ '.txt', 'w')#archivo red LT 
+seed = int(time.time()) #semilla del valor randomico que permite la influencia entre vecinos y prob de influenciar para replicar basta con hacer la variable seed igual a una semilla utilizada antes
+h.write(str(seed)) 
 for i in range(len(mensaje)):
     seed = seed + 1
-    objetoRandom = random.Random(seed)
-    mensaje[i] = mensaje[i].rstrip("\n").split(",")
-    aux = mensaje[i][0], mensaje[i][1], mensaje[i][2], round(objetoRandom.random(), 1)
-    j.write(str(aux[1]) +' '+ str(aux[0])+' ' + str(int(aux[2])+11) + ' '+ str(aux[3]) + '\n') 
-    # print(aux[1],aux[0],int(aux[2])+11)
+    objetoRandom = random.Random(seed) #probabilidad de inflouenciar vecinos
+    objetoRandomVec= random.Random(objetoRandom) #probabilidad de que los vecinos sean vecinos 
+    mensaje[i] = mensaje[i].rstrip("\n").split(" ")
+    aleatorioVec =  round(objetoRandom.random(), 1)
+    aux_ic = mensaje[i][0], mensaje[i][1], aleatorioVec, round(objetoRandomVec.random(), 1)
+    aux_lt = mensaje[i][0], mensaje[i][1], mensaje[i][2], aleatorioVec
+    j.write(str(aux_ic[0]) +' '+ str(aux_ic[1])+' ' + str(aux_ic[2]) + ' '+ str(aux_ic[3])+ '\n')
+    lt.write(str(aux_lt[0]) +' '+ str(aux_lt[1])+' ' + str(int(aux_lt[2])) + ' '+ str(aux_lt[3]) + '\n') ##aqui aux_lt[2] tiene +11 dado que en la red especifica era necesario sumar 11 para que no dieran valores negativos
+

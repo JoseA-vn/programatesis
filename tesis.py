@@ -100,243 +100,248 @@ def dispersarIC(G, nodos, resultado):#comienza el algoritmo de IC-Model
     return nodos, list(influenciado) #retorna el resultado acumulado y el de la iteración actual
 
 
-def main(): #declaración de los parámetros ingresados por el ususario
-    global args
-    Parser = ap.ArgumentParser(
-        description='Medida de centralidad generalizada.')
-    Parser.add_argument("-a", default=None, type=str,
-                        help='Nodo en específico al que se le calculará la centralidad.')
-    Parser.add_argument("-l", default=0, type=int,
-                        help='Nivel de profundidad.')
-    Parser.add_argument("-d", default=0, type=int,
-                        help='Sentido de influencia 0 Ambos sentidos, 1 Salida, 2 Entrada.')
-    Parser.add_argument("-r", default=1, type=float,
-                        help='valor de influencia en la vecindad en probabilidades. 0, 0.25, 0.50, 0.75, 1')
-    Parser.add_argument("-m", default=1, type=float,required=True,
-                        help='Modelo de dispersión a utilizar 1 IC-Model 2 LT-Model.')
-    args = Parser.parse_args()
 
 
 if __name__ == "__main__":
-    main()
 
-    #seteo de parámetros en las variables del programa
-    profundidad = args.l 
-    direccion = args.d
-    randomVec = args.r
-    nodopara = args.a
-    modelo = args.m
 
     LT = nx.DiGraph()
     IC = nx.DiGraph()
-    if modelo == 1:
-        # PREPARACIÓN ARCHIVO PARA IC MODEL
-        f = open('archivos/IC/football/footballIC.txt', 'r')
-        mensaje = f.readlines()
-        f.close()
-        nodosIC = []
-        for i in range(len(mensaje)):
-            mensaje[i] = mensaje[i].rstrip("\n").split(" ")
-            aux = mensaje[i][0], mensaje[i][1], float(mensaje[i][2])
-            nodosIC.append(aux)
-        IC.add_weighted_edges_from(nodosIC)
-        for i in range(len(mensaje)):
-            IC.edges[(mensaje[i][0], mensaje[i][1])
-                    ]['probinfluenciar'] = float(mensaje[i][3])
-        for i in IC.nodes():
-            IC.nodes[i]['prevecino'] = False
-            IC.nodes[i]['posvecino'] = False
 
-        if nodopara:
-            vecinos = [nodopara]
-            vecinosPos = [nodopara]
-            vecinosPre = [nodopara]
-            resultadoIC = []
-            for i in range(profundidad):
-                if direccion == 0:
-                    auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-                    vecinosPre = []
-                    vecinosPre.extend(auxvecinos) 
-                    vecinos.extend(auxinfluenciados)
+    archivo = 'football'
+    # PREPARACIÓN ARCHIVO PARA IC MODEL
+    f = open('archivos/IC/'+archivo+'/'+archivo+'.txt', 'r')
+    mensaje = f.readlines()
+    f.close()
+    nodosIC = []
+    for i in range(len(mensaje)):
+        mensaje[i] = mensaje[i].rstrip("\n").split(" ")
+        aux = mensaje[i][0], mensaje[i][1], float(mensaje[i][2])
+        nodosIC.append(aux)
+    IC.add_weighted_edges_from(nodosIC)
+    for i in range(len(mensaje)):
+        IC.edges[(mensaje[i][0], mensaje[i][1])
+                ]['probinfluenciar'] = float(mensaje[i][3])
+    for i in IC.nodes():
+        IC.nodes[i]['prevecino'] = False
+        IC.nodes[i]['posvecino'] = False
 
-                    auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-                    vecinosPos = []
-                    vecinosPos.extend(auxvecinos)
-                    vecinos.extend(auxinfluenciados)
+    for q in [0, 1, 4, 6]:
+        for e in [0, 1, 2]:
+            if q == 0: 
+                profundidad = q
+                direccion = e
 
-                if direccion == 1: 
-                    auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPre)
-                    vecinosPre = []
-                    vecinosPre.extend(auxvecinos)
-                    vecinos.extend(auxinfluenciados)
+                doc = open('archivos/IC/'+archivo+'/Resultados/'+archivo+'IC'+str(q)+str(e)+'0'+'.csv', 'w', newline='')
+                escribir = csv.writer(doc, delimiter=';')
+                escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+'0'])
+                
+                demoraIC = time.time()
+                for nodo in IC.nodes():
+                    vecinosPre = [nodo]
+                    vecinosPos = [nodo]
+                    vecinos = [nodo]
 
-                if direccion == 2:
-                    auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-                    vecinosPre = []
-                    vecinosPre.extend(auxvecinos) 
-                    vecinos.extend(auxinfluenciados)
-            vecinos = list(dict.fromkeys(vecinos))
-            print(len(vecinos), "esta es la cantidad de vecinos")
-            resultadoIC = list(map(int, independent_cascade(IC, vecinos)))
-            print("El conjunto resultado es: ", sorted(
-                resultadoIC), " de tamaño: ", len(resultadoIC))
-            for i in IC.nodes():
-                IC.nodes[i]['prevecino'] = False
-                IC.nodes[i]['posvecino'] = False
-        else:
-            doc = open('footballIC'+str(profundidad)+ str(direccion)+str(randomVec)+'.csv', 'w', newline='')
-            escribir = csv.writer(doc, delimiter=';')
-            escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(profundidad), 'dirección'+ str(direccion), 'prob vecinos'+str(randomVec)])
+                    for i in range(profundidad):
+                        if direccion == 0:
+                            auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos) 
+                            vecinos.extend(auxinfluenciados)
 
-            demoraIC = time.time()
-            for nodo in IC.nodes():
-                vecinosPre = [nodo]
-                vecinosPos = [nodo]
-                vecinos = [nodo]
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
+                            vecinosPos = []
+                            vecinosPos.extend(auxvecinos)
+                            vecinos.extend(auxinfluenciados)
 
-                for i in range(profundidad):
-                    if direccion == 0:
-                        auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-                        vecinosPre = []
-                        vecinosPre.extend(auxvecinos) 
-                        vecinos.extend(auxinfluenciados)
+                        if direccion == 1: 
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos)
+                            vecinos.extend(auxinfluenciados)
 
-                        auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
-                        vecinosPos = []
-                        vecinosPos.extend(auxvecinos)
-                        vecinos.extend(auxinfluenciados)
+                        if direccion == 2:
+                            auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos) 
+                            vecinos.extend(auxinfluenciados)
+                    vecinos = list(dict.fromkeys(vecinos))
+                    resultadoIC = independent_cascade(IC, vecinos)
+                    aux = nodo, len(vecinos), len(resultadoIC)
+                    for i in IC.nodes():
+                        IC.nodes[i]['prevecino'] = False
+                        IC.nodes[i]['posvecino'] = False
+                    escribir.writerow(aux)
+                demoraIC = time.time() - demoraIC
+                escribir.writerow([str(demoraIC)])
+            else:
+                
+                for r in [0.25, 0.5, 0.75, 1]:
+                    profundidad = q
+                    direccion = e
+                    randomVec = r
+                    doc = open('archivos/IC/'+archivo+'/Resultados/'+archivo+'IC'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                    escribir = csv.writer(doc, delimiter=';')
+                    escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
+                    
+                    demoraIC = time.time()
+                    for nodo in IC.nodes():
+                        vecinosPre = [nodo]
+                        vecinosPos = [nodo]
+                        vecinos = [nodo]
 
-                    if direccion == 1: 
-                        auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPre)
-                        vecinosPre = []
-                        vecinosPre.extend(auxvecinos)
-                        vecinos.extend(auxinfluenciados)
+                        for i in range(profundidad):
+                            if direccion == 0:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
 
-                    if direccion == 2:
-                        auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
-                        vecinosPre = []
-                        vecinosPre.extend(auxvecinos) 
-                        vecinos.extend(auxinfluenciados)
-                vecinos = list(dict.fromkeys(vecinos))
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPos)
+                                vecinosPos = []
+                                vecinosPos.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
 
-                resultadoIC = independent_cascade(IC, vecinos)
+                            if direccion == 1: 
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(IC,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
 
-                aux = nodo, len(vecinos), len(resultadoIC)
+                            if direccion == 2:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(IC,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
+                        vecinos = list(dict.fromkeys(vecinos))
+                        resultadoIC = independent_cascade(IC, vecinos)
+                        aux = nodo, len(vecinos), len(resultadoIC)
+                        for i in IC.nodes():
+                            IC.nodes[i]['prevecino'] = False
+                            IC.nodes[i]['posvecino'] = False
+                        escribir.writerow(aux)
+                    demoraIC = time.time() - demoraIC
+                    escribir.writerow([str(demoraIC)])
 
-                escribir.writerow(aux)
-            demoraIC = time.time() - demoraIC
-            escribir.writerow([str(demoraIC)])
-            print('El nombre del archivo con sus resultados es: footballIC'+str(profundidad)+ str(direccion)+str(randomVec)+'.csv')
+    
+    
+    f = open('archivos/LT/'+archivo+'/'+archivo+'.txt', 'r')
+    archivolt = f.readlines()
+    f.close()
+    pesos = []
+    nodos = []
+    for i in range(len(archivolt)):
+        archivolt[i] = archivolt[i].rstrip("\n").split(" ")
+        h = archivolt[i][0], archivolt[i][1], int(archivolt[i][2])
+        nodos.append(h)
+    LT.add_weighted_edges_from(nodos)
+    for i in range(len(archivolt)):
+        LT.edges[(archivolt[i][0], archivolt[i][1])]['probinfluenciar'] = float(archivolt[i][3])
+    for i in LT.nodes():
+        peso = 0
+        cont = 0
+        for k in LT.predecessors(i):
+            cont = cont + 1
+            peso = peso + LT.edges[(k, i)]['weight']
+        LT.nodes[i]['etiqueta'] = (peso//2)+1
+        LT.nodes[i]['prevecino'] = False
+        LT.nodes[i]['posvecino'] = False
+    for q in [0,1,4,6]:
+        for e in [0, 1, 2]:
+            if q == 0:
+                profundidad = q
+                direccion = e
+                doc = open('archivos/LT/'+archivo+'/Resultados/'+archivo+'LT'+str(q)+str(e)+'0'+'.csv', 'w', newline='')
+                escribir = csv.writer(doc, delimiter=';')
+                escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+'0'])
+                demoraLT = time.time()
+                for nodo in LT.nodes():
+                    vecinosPre = [nodo]
+                    vecinosPos = [nodo]
+                    vecinos = [nodo]
+                    resultadoLT = []
 
-    else:
-    #    PREPARACIÓN ARCHIVO PARA LT MODEL
-        f = open('archivos/LT/football/footballLT.txt', 'r')
-        archivolt = f.readlines()
-        f.close()
-        pesos = []
-        nodos = []
-        for i in range(len(archivolt)):
-            archivolt[i] = archivolt[i].rstrip("\n").split(" ")
-            h = archivolt[i][0], archivolt[i][1], int(archivolt[i][2])
-            nodos.append(h)
-        LT.add_weighted_edges_from(nodos)
-        for i in range(len(archivolt)):
-            LT.edges[(archivolt[i][0], archivolt[i][1])]['probinfluenciar'] = float(archivolt[i][3])
-        for i in LT.nodes():
-            peso = 0
-            for k in LT.predecessors(i):
-                peso = peso + LT.edges[(k, i)]['weight']
-            LT.nodes[i]['etiqueta'] = (peso/2)+1
-            LT.nodes[i]['prevecino'] = False
-            LT.nodes[i]['posvecino'] = False
-            # print(LT.nodes[i]['resistencia'])
+                    for i in range(profundidad):
+                        if direccion == 0:
+                            auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos) 
+                            vecinos.extend(auxinfluenciados)
 
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
+                            vecinosPre = []
+                            vecinosPos.extend(auxvecinos)
+                            vecinos.extend(auxinfluenciados)
 
-        ### ejecución de LTR
-        if nodopara:
-            vecinos = [nodopara]
-            vecinosPos = [nodopara]
-            vecinosPre = [nodopara]
-            resultadoLT = []
+                        if direccion == 1: 
+                            auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos)
+                            vecinos.extend(auxinfluenciados)
 
-            for i in range(profundidad):
-                if direccion == 0:
-                    auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
-                    vecinosPre = []
-                    vecinosPre.extend(auxvecinos) 
-                    vecinos.extend(auxinfluenciados)
+                        if direccion == 2:
+                            auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                            vecinosPre = []
+                            vecinosPre.extend(auxvecinos) 
+                            vecinos.extend(auxinfluenciados)
+                    vecinos = list(dict.fromkeys(vecinos))
+                    resultadoLT.extend(linear_threshold(LT, vecinos))
+                    resultadoLT = list(set(resultadoLT))
+                    for i in LT.nodes():
+                        LT.nodes[i]['prevecino'] = False
+                        LT.nodes[i]['posvecino'] = False
+                    aux = nodo, len(vecinos), len(resultadoLT)
 
-                    auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
-                    vecinosPos = []
-                    vecinosPos.extend(auxvecinos)
-                    vecinos.extend(auxinfluenciados)
+                    escribir.writerow(aux)
+                demoraLT = time.time() - demoraLT
+                escribir.writerow([str(demoraLT)])
+            else:
+                for r in [0.5, 0.75, 1]:
+                    profundidad = q
+                    direccion = e
+                    randomVec = r
+                    doc = open('archivos/LT/'+archivo+'/Resultados/'+archivo+'LT'+str(q)+str(e)+str(r)+'.csv', 'w', newline='')
+                    escribir = csv.writer(doc, delimiter=';')
+                    escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(q), 'dirección'+ str(e), 'prob vecinos'+str(r)])
+                    demoraLT = time.time()
+                    for nodo in LT.nodes():
+                        vecinosPre = [nodo]
+                        vecinosPos = [nodo]
+                        vecinos = [nodo]
+                        resultadoLT = []
 
-                if direccion == 1: 
-                    auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPre)
-                    vecinosPre = []
-                    vecinosPre.extend(auxvecinos)
-                    vecinos.extend(auxinfluenciados)
+                        for i in range(profundidad):
+                            if direccion == 0:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
 
-                if direccion == 2:
-                    auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
-                    vecinosPre = []
-                    vecinosPre.extend(auxvecinos) 
-                    vecinos.extend(auxinfluenciados)
-            print(len(vecinos), "esta es la cantidad de vecinos")
-            vecinos = list(dict.fromkeys(vecinos))
-            resultadoLT.extend(linear_threshold(LT, vecinos))
-            resultadoLT = list(set(resultadoLT))
-            print("El conjunto resultado es: ",resultadoLT, " de tamaño: ", len(resultadoLT))
-            for i in LT.nodes():
-                LT.nodes[i]['prevecino'] = False
-                LT.nodes[i]['posvecino'] = False
-        else:
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
+                                vecinosPre = []
+                                vecinosPos.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
 
+                            if direccion == 1: 
+                                auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos)
+                                vecinos.extend(auxinfluenciados)
 
-            doc = open('footballLT'+str(profundidad)+ str(direccion)+str(randomVec)+'.csv', 'w', newline='')
-            escribir = csv.writer(doc, delimiter=';')
-            escribir.writerow(['i', '|Xi|', '|F(Xi)|','profundidad'+ str(profundidad), 'dirección'+ str(direccion), 'prob vecinos'+str(randomVec)])
-            demoraLT = time.time()
-            for nodo in LT.nodes():
+                            if direccion == 2:
+                                auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
+                                vecinosPre = []
+                                vecinosPre.extend(auxvecinos) 
+                                vecinos.extend(auxinfluenciados)
+                        vecinos = list(dict.fromkeys(vecinos))
+                        resultadoLT.extend(linear_threshold(LT, vecinos))
+                        resultadoLT = list(set(resultadoLT))
+                        for i in LT.nodes():
+                            LT.nodes[i]['prevecino'] = False
+                            LT.nodes[i]['posvecino'] = False
+                        aux = nodo, len(vecinos), len(resultadoLT)
 
-                resultadoLT = []
-                vecinos= [nodo]
-                vecinosPos = [nodo]
-                vecinosPre = [nodo]
-                LT.nodes[nodo]['vecino'] = True
-
-                for i in range(profundidad):
-                    if direccion == 0:
-                        auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
-                        vecinosPre = []
-                        vecinosPre.extend(auxvecinos) 
-                        vecinos.extend(auxinfluenciados)
-
-                        auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPos)
-                        vecinosPre = []
-                        vecinosPos.extend(auxvecinos)
-                        vecinos.extend(auxinfluenciados)
-
-                    if direccion == 1: 
-                        auxvecinos, auxinfluenciados = buscarVecinosPos(LT,vecinosPre)
-                        vecinosPre = []
-                        vecinosPre.extend(auxvecinos)
-                        vecinos.extend(auxinfluenciados)
-
-                    if direccion == 2:
-                        auxvecinos, auxinfluenciados = buscarVecinosPre(LT,vecinosPre)
-                        vecinosPre = []
-                        vecinosPre.extend(auxvecinos) 
-                        vecinos.extend(auxinfluenciados)
-                vecinos = list(dict.fromkeys(vecinos))
-                resultadoLT.extend(linear_threshold(LT, vecinos))
-                resultadoLT = list(set(resultadoLT))
-                # graficar.append(len(resultadoLT))
-                for vaciar in LT.nodes():
-                    LT.nodes[vaciar]['vecino'] = False
-                aux = nodo, len(vecinos), len(resultadoLT)
-
-                escribir.writerow(aux)
-            demoraLT = time.time() - demoraLT
-            escribir.writerow([str(demoraLT)])
+                        escribir.writerow(aux)
+                    demoraLT = time.time() - demoraLT
+                    escribir.writerow([str(demoraLT)])
 
